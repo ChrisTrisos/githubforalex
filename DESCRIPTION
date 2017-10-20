@@ -14,7 +14,8 @@ Imports:
     nlme,
     pracma,
     entropy,
-    optimx
+    optimx,
+    tools
 Suggests:
     testthat,
     knitr,

@@ -4,7 +4,7 @@
 \alias{findHensonInflection}
 \title{Find inflections in temperature time series}
 \usage{
-findHensonInflection(TsData, option, sdDate = 1980, nSD = 2,
+findHensonInflection(TsData, option = 2, sdDate = 1980, nSD = 2,
   sdThreshold = 1, lowerBound = 1950, upperBound = 2010, verbose = T)
 }
 \arguments{

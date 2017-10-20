@@ -94,6 +94,9 @@ calculateMaxT<-function(groupName,
                         StDevWithin=3,
                         StDevAcross=3){
 
+	# for testing
+	# quantWithin=NA;quantAcross=NA;StDevWithin=3;StDevAcross=3; ranges=rangeCells
+	
   species<-names(rangeCells)
   nSpec<-length(species)
   nCols<-length(TempTimeSeries)
@@ -102,9 +105,9 @@ calculateMaxT<-function(groupName,
   rownames(maxT)<-species
 
   for(i in 1:nCols){
-    load(paste(TimeSeriesFolder,TempTimeSeries[i],sep=""))
-    maxT[,i]<-extractMaxT(rangeCells,domain,tempPreMat,quantWithin,quantAcross,StDevWithin,StDevAcross)
-    print(i)
+	  print(i)
+    load(paste0(TimeSeriesFolder,'/',TempTimeSeries[i]))
+    maxT[,i]<-extractMaxT(rangeCells,domain, histT=tempPreMat,quantWithin,quantAcross,StDevWithin,StDevAcross)
   }
 
   save(maxT,file=paste(outFolder,groupName,".rda",sep=""))
@@ -154,6 +157,9 @@ extractMaxT<-function(ranges,
                       StDevWithin,
                       StDevAcross){
 
+	# for testing
+	# histT=tempPreMat
+	
   nSpec<-length(ranges) # number of species
 
   maxTemp<-rep(NA,nSpec)
@@ -170,11 +176,12 @@ extractMaxT<-function(ranges,
 
         histTFoc<-histT[focRows,] # extract the rows in the temperature matrix corresponding to these cells
         if(length(focRows)>1){ # remove any rows missing temperature data - these are typically coastal cells
-          focRows<-which(is.na(rowQuantiles(histTFoc,na.rm=TRUE,1))==FALSE)
-          histTFoc<-histTFoc[focRows,]
+        	# CM: not sure what this is meant to do; sometimes comes up NULL
+          focRows<-which(is.na(matrixStats::rowQuantiles(histTFoc,na.rm=TRUE,1))== FALSE)
+          if(length(focRows)>1)  histTFoc<-histTFoc[focRows,]
         }
-
-        if(length(focRows)==1){ # if the species range is just a single cell
+				
+        if(nrow(histTFoc)==1){ # if the species range is just a single cell
           histTFoc<-na.omit(histTFoc)
           if(length(histTFoc)>0){
             if(is.na(StDevWithin)==FALSE){
@@ -193,19 +200,19 @@ extractMaxT<-function(ranges,
             }
           }
         }
-        if(length(focRows)>1){	# if the species range has multiple cells then we have a matrix
+        if(nrow(histTFoc)>1){	# if the species range has multiple cells then we have a matrix
 
           #find the maximum temperature within each cell
           if(is.na(StDevWithin)==FALSE){
             histTFocMean<-rowMeans(histTFoc,na.rm=TRUE)
-            histTFocSD<-rowSds(histTFoc,na.rm=TRUE)
+            histTFocSD<-matrixStats::rowSds(histTFoc,na.rm=TRUE)
             histTFocSD_upper<-histTFocMean+(histTFocSD*StDevWithin)
             FindOutliers<-sweep(histTFoc,1,histTFocSD_upper)
             histTFoc[FindOutliers>0]<-NA
-            histTFoc<-rowMaxs(histTFoc,na.rm=TRUE)
+            histTFoc<-matrixStats::rowMaxs(histTFoc,na.rm=TRUE)
           }
           if(is.na(quantWithin)==FALSE){
-            histTFoc<-rowQuantiles(histTFoc,quantWithin,na.rm=TRUE)
+            histTFoc<-matrixStats::rowQuantiles(histTFoc,quantWithin,na.rm=TRUE)
           }
 
           #find the maximum temperature across the range
@@ -221,7 +228,7 @@ extractMaxT<-function(ranges,
           if(is.na(quantAcross)==FALSE){
             maxTemp[i]<-as.numeric(quantile(histTFoc,quantAcross))
           }
-        }
+        } # end if length(focRows)>1
       }
       #print(i)
     }

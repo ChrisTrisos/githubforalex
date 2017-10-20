@@ -4,7 +4,8 @@
 \alias{findInflectionTimes}
 \title{findInflectionTimes}
 \usage{
-findInflectionTimes(domain, inputFolder, TempTimeSeries, method, printProgress)
+findInflectionTimes(domain, inputFolder, TempTimeSeries, method,
+  printProgress = FALSE, parallelize = FALSE, ...)
 }
 \value{
 a data.frame

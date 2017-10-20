@@ -4,7 +4,7 @@
 \alias{calcInflectionTimes}
 \title{calcInflectionTimes}
 \usage{
-calcInflectionTimes(tempMat, method, printProgress)
+calcInflectionTimes(tempMat, method, printProgress, ...)
 }
 \value{
 a data.frame
